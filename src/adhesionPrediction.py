@@ -1,52 +1,12 @@
-# ============================================================
-# SCRIPT NAME: lpr_calculations.py
-# PURPOSE: Define all LPR model parameters, functions, and
-#          run the force vs air gap sweep for all 6 magnet +
-#          L-piece configurations. No plotting — output only.
-# AUTHOR: Ken Aoki
-# DATE: 2026-06-27
-# LAB: RIP Lab, University of Hawaii at Manoa
-#
-# HOW TO USE:
-#   Run standalone:  python lpr_calculations.py
-#     → prints console tables for all 6 configurations
-#
-#   Import into another script (e.g. lpr_plots.py):
-#     from lpr_calculations import run_all_configs, MAGNETS, X_MAX, N_TO_LBF
-#     results = run_all_configs()
-# ============================================================
+"""author Ken Aoki 6/27/26"""
+import numpy as np    
 
-# --- IMPORTS ---
-# numpy is the only dependency here — no matplotlib needed
-import numpy as np    # NumPy: matrix math (equivalent to MATLAB built-ins)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 1: CONSTANTS
-# (module-level, available to any script that imports this file)
-# ─────────────────────────────────────────────────────────────────────────────
 MU_0     = 4 * np.pi * 1e-7   # Permeability of free space [H/m]
 IN_TO_M  = 0.0254              # Unit conversion: 1 inch = 0.0254 m
 N_TO_LBF = 1.0 / 4.44822      # Unit conversion: Newtons → pounds-force
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 2: MAGNET PARAMETERS
-# ─────────────────────────────────────────────────────────────────────────────
-# GEOMETRY NOTE:
-#   Both magnets are magnetized through their THICKNESS (shortest dimension).
-#   l_m = path length through magnet along magnetization direction [m]
-#   A_m = magnet cross-sectional area perpendicular to B [m^2]
-#
-#   N52 (0.5 × 0.5 × 2 in), magnetized through 0.5" thickness:
-#       l_m = 0.5"  →  0.0127 m
-#       A_m = 2" × 0.5" face  →  6.45e-4 m^2
-#
-#   N48 (1 × 1 × 2 in), magnetized through 1" thickness:
-#       l_m = 1.0"  →  0.0254 m
-#       A_m = 2" × 1.0" face  →  1.29e-3 m^2
-#
-# MATERIAL NOTE:
-#   Hc uses grade-average values from IEC 60404-8-1.
-#   TODO: Replace with exact supplier values when obtained from CMS and Apex.
+
 
 MAGNETS = {
 
@@ -70,9 +30,7 @@ MAGNETS = {
 
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 3: SHARED GEOMETRY
-# ─────────────────────────────────────────────────────────────────────────────
+
 D      = 2.0 * IN_TO_M    # Pole face depth [m] — 8 L-pieces × 0.25 in = 2.0 in (constant)
 X_MIN  = 0.10e-3          # Minimum air gap [m] — 0.1 mm, avoids divide-by-zero
 X_MAX  = 15.0e-3          # Maximum air gap [m] — 15 mm sweep ceiling
@@ -80,10 +38,6 @@ N_PTS  = 500              # Number of points in gap sweep
 
 # Air gap array [m] — same as MATLAB: linspace(X_MIN, X_MAX, N_PTS)
 X_ARR  = np.linspace(X_MIN, X_MAX, N_PTS)
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 4: LPR MODEL FUNCTIONS
-# ─────────────────────────────────────────────────────────────────────────────
 
 def magnet_reluctance(l_m, mu_r, A_m):
     """
@@ -180,9 +134,7 @@ def adhesion_force(Phi, A_eff):
     """
     return Phi**2 / (MU_0 * A_eff)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 5: MAIN COMPUTATION FUNCTION
-# ─────────────────────────────────────────────────────────────────────────────
+
 
 def run_all_configs():
     """
@@ -196,9 +148,8 @@ def run_all_configs():
             'A_eff' : effective gap area [m^2],    shape (N_PTS,)
             'w'     : pole face width [m],         scalar
             'w_in'  : pole face width [inches],    scalar
-        }
+        
 
-    This dict is imported by lpr_plots.py for graphing.
     """
     results = {}
 
@@ -242,9 +193,7 @@ def run_all_configs():
 
     return results
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 6: CONSOLE OUTPUT FUNCTION
-# ─────────────────────────────────────────────────────────────────────────────
+
 
 def print_tables(results):
     """
@@ -293,16 +242,7 @@ def print_tables(results):
                           f"{data['kappa'][idx]:>9.3f}  "
                           f"{data['A_eff'][idx]*1e6:>14.2f}")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 7: STANDALONE ENTRY POINT
-# ─────────────────────────────────────────────────────────────────────────────
-# NOTE: The block below ONLY runs when you execute this file directly:
-#           python lpr_calculations.py
-#
-#       It does NOT run when lpr_plots.py imports this file.
-#       This is Python's standard way of separating "library code"
-#       from "run this now" code.
-#       MATLAB equivalent: putting code outside of functions in a script.
+
 
 if __name__ == "__main__":
     results = run_all_configs()

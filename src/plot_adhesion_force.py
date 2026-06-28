@@ -1,28 +1,10 @@
-# ============================================================
-# SCRIPT NAME: lpr_plots.py
-# PURPOSE: Generate all plots for the LPR model force predictions.
-#          Imports computed results from lpr_calculations.py.
-#          Does NOT redefine any physics — only graphing here.
-# AUTHOR: Ken Aoki
-# DATE: 2026-06-27
-# LAB: RIP Lab, University of Hawaii at Manoa
-#
-# REQUIRES: lpr_calculations.py must be in the same folder.
-#
-# HOW TO RUN:
-#   python lpr_plots.py
-#   → produces and saves lpr_force_curves.png
-# ============================================================
 
-# --- IMPORTS ---
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-# Import everything needed from the calculations file.
-# Python runs lpr_calculations.py once when this line executes,
-# but because of the "if __name__ == '__main__'" guard in that file,
-# it does NOT print any tables — it just loads the functions and constants.
+
 from lpr_calculations import (
     run_all_configs,   # function that runs the full sweep
     MAGNETS,           # magnet parameter dict (used for labels)
@@ -30,29 +12,13 @@ from lpr_calculations import (
     N_TO_LBF,          # unit conversion factor N → lbf
 )
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 1: RUN CALCULATIONS
-# ─────────────────────────────────────────────────────────────────────────────
-# Call the computation function from lpr_calculations.py.
-# This gives us a nested dict with x, F, kappa arrays for each config.
-results = run_all_configs()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 2: PLOT STYLING
-# ─────────────────────────────────────────────────────────────────────────────
-# Colors: 3 shades per magnet (dark → light as pole width increases)
 N52_COLORS = ["#1565C0", "#1E88E5", "#90CAF9"]   # blue family (N52)
 N48_COLORS = ["#B71C1C", "#E53935", "#EF9A9A"]   # red family (N48)
 LINESTYLES = ["-", "--", "-."]                    # solid, dashed, dash-dot
 
 COLOR_SETS = [N52_COLORS, N48_COLORS]   # index matches order of MAGNETS dict
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 3: BUILD FIGURE
-# ─────────────────────────────────────────────────────────────────────────────
-# Layout: 2 rows × 2 columns
-#   Row 1 (top):    Force [N] vs air gap x [mm]   — dimensional view
-#   Row 2 (bottom): Force [N] vs kappa = x/w      — dimensionless view (paper axis)
+
 
 fig = plt.figure(figsize=(16, 10))
 fig.suptitle(
@@ -80,11 +46,7 @@ axes_pairs = [
     (ax_N48_Fx, ax_N48_Fk),
 ]
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 4: PLOT EACH CONFIGURATION
-# ─────────────────────────────────────────────────────────────────────────────
-# enumerate gives us both an index and the value in each loop iteration.
-# MATLAB equivalent: for col = 1:length(magnet_names)
+
 
 for col, (magnet_name, configs) in enumerate(results.items()):
 
@@ -153,9 +115,7 @@ for col, (magnet_name, configs) in enumerate(results.items()):
                   linestyle="--", label="κ = 1.0")
     ax_Fk.legend(fontsize=9, title="L-piece width", title_fontsize=9)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 5: FOOTNOTE AND SAVE
-# ─────────────────────────────────────────────────────────────────────────────
+
 fig.text(
     0.5, 0.005,
     "NOTE: Hc uses N-grade average (IEC 60404-8-1) — replace with supplier values when obtained. "
