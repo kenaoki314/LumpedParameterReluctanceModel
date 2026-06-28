@@ -36,7 +36,7 @@ X_MIN  = 0.10e-3          # Minimum air gap [m] — 0.1 mm, avoids divide-by-zer
 X_MAX  = 15.0e-3          # Maximum air gap [m] — 15 mm sweep ceiling
 N_PTS  = 500              # Number of points in gap sweep
 
-# Air gap array [m] — same as MATLAB: linspace(X_MIN, X_MAX, N_PTS)
+
 X_ARR  = np.linspace(X_MIN, X_MAX, N_PTS)
 
 def magnet_reluctance(l_m, mu_r, A_m):
@@ -121,9 +121,7 @@ def adhesion_force(Phi, A_eff):
 
     Formula:  F = Phi^2 / (mu_0 * A_eff)
 
-    Derived from Maxwell stress tensor at each gap:
-        F_one_gap = Phi^2 / (2 * mu_0 * A_eff)
-    Two gaps contribute equally:
+Two gaps contribute equally:
         F_total   = 2 * F_one = Phi^2 / (mu_0 * A_eff)
 
     Args:
@@ -155,7 +153,7 @@ def run_all_configs():
 
     for magnet_name, p in MAGNETS.items():
 
-        # MMF = Hc * l_m  [A]  (magnetomotive force — the 'voltage' driving the circuit)
+        # MMF = Hc * l_m  [A]  (magnetomotive force 
         MMF = p["Hc"] * p["l_m"]
 
         # R_m is fixed for a given magnet — does not change with L-piece config
@@ -168,13 +166,11 @@ def run_all_configs():
             w     = w_in * IN_TO_M          # pole face width [m]
             label = f'w = {w_in}" ({w*1e3:.2f} mm)'
 
-            # Pre-allocate output arrays (like zeros() in MATLAB)
+           
             F_arr     = np.zeros(N_PTS)
             A_eff_arr = np.zeros(N_PTS)
 
-            # Sweep: compute force at each air gap value
-            # In MATLAB this would be a vectorized operation;
-            # in Python we loop explicitly for clarity.
+         
             for i, x in enumerate(X_ARR):
                 A_eff        = effective_gap_area(x, w, D)
                 R_g          = gap_reluctance_total(x, A_eff)

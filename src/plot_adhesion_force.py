@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 
-from lpr_calculations import (
+from adhesionPrediction import (
     run_all_configs,   # function that runs the full sweep
     MAGNETS,           # magnet parameter dict (used for labels)
     X_MAX,             # max air gap [m] (used to set axis limits)
@@ -59,27 +59,26 @@ for col, (magnet_name, configs) in enumerate(results.items()):
         clr  = colors[c_idx]
         ls   = LINESTYLES[c_idx]
 
-        # ── Plot 1: Force vs air gap (dimensional) ───────────────────────
         ax_Fx.plot(
-            data["x"] * 1e3,    # convert m → mm for x-axis
-            data["F"],          # force in Newtons
+            data["x"] * 1e3,    # convert m  mm 
+            data["F"],          # force 
             color=clr,
             linestyle=ls,
             linewidth=2.0,
             label=label
         )
 
-        # ── Plot 2: Force vs kappa (dimensionless) ───────────────────────
+        
         ax_Fk.plot(
             data["kappa"],      # kappa = x/w (dimensionless)
-            data["F"],          # force in Newtons
+            data["F"],          # force 
             color=clr,
             linestyle=ls,
             linewidth=2.0,
             label=f'w = {data["w_in"]}"'
         )
 
-    # ── FORMAT: F vs x panel ─────────────────────────────────────────────
+   
     ax_Fx.set_xlabel("Air gap  x  [mm]", fontsize=11)
     ax_Fx.set_ylabel("Adhesion force  F  [N]", fontsize=11)
     ax_Fx.set_title(magnet_name, fontsize=11, fontweight="bold")
@@ -88,13 +87,13 @@ for col, (magnet_name, configs) in enumerate(results.items()):
     ax_Fx.set_xlim(0, X_MAX * 1e3)
     ax_Fx.set_ylim(bottom=0)
 
-    # Secondary y-axis in lbf (twin of the N axis)
+    
     ax_Fx2 = ax_Fx.twinx()
     ax_Fx2.set_ylim(np.array(ax_Fx.get_ylim()) * N_TO_LBF)
     ax_Fx2.set_ylabel("Force [lbf]", fontsize=9, color="#555555")
     ax_Fx2.tick_params(axis="y", labelcolor="#555555")
 
-    # ── FORMAT: F vs kappa panel ─────────────────────────────────────────
+   
     ax_Fk.set_xlabel(r"Dimensionless air gap   $\kappa = x/w$   [—]", fontsize=11)
     ax_Fk.set_ylabel("Adhesion force  F  [N]", fontsize=11)
     ax_Fk.set_title(
@@ -107,8 +106,7 @@ for col, (magnet_name, configs) in enumerate(results.items()):
     ax_Fk.set_xlim(left=0)
     ax_Fk.set_ylim(bottom=0)
 
-    # Vertical reference lines at candidate validity bounds κ = 0.5 and 1.0
-    # These are the hypothesized accuracy breakpoints — paper will test these
+   
     ax_Fk.axvline(x=0.5, color="#888888", linewidth=1.2,
                   linestyle=":",  label="κ = 0.5")
     ax_Fk.axvline(x=1.0, color="#555555", linewidth=1.2,
